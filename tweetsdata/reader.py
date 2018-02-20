@@ -1,10 +1,8 @@
 import os, sys
 import json, csv, re
 from datetime import datetime
-sys.path.append('TwitterAPI')
 from TwitterAPI import TwitterAPI
-from TwitterError import *
-
+from TwitterAPI.TwitterError import *
 
 def init_api():
     fp = open('credentials.json')
@@ -16,14 +14,34 @@ def init_api():
     api = TwitterAPI(key, key_secret, token, token_secret)
     return api
 
+def get_time(twt_time):
+    splitted = re.split(r'\+\d{4}', twt_time)
+    splitted = map(lambda s:s.strip(), splitted)
+    time_str = ' '.join(splitted)
+    time = datetime.strptime(time_str, '%c')
+    return time.day, time.hour, time.minute
+
+def get_coor(coors):
+    try:
+        return coors['coordinates'][0], coors['coordinates'][1]
+    except:
+        # print('no coordinate data, ignoring...')
+        return None, None
+
+
 def main():
     api = init_api()
     #make first reques without max_id
-    res = api.request('search/tweets'
-                        , params={ 'q': None  
+    try:
+        res = api.request('search/tweets'
+                            , params= { 'q': None  
                                 , 'geocode':'55.953251,-3.188267,2mi'
                                 , 'count':'1'
-                                , 'until':'2018-02-15'})
+                                , 'until':'2018-02-18'})
+    except TwitterRequestError as err:
+        if (err.status_code == 429):
+            print('Ran out of requests, stopping...')
+    
     maxid = None
     for first_tweet in res.get_iterator():
         maxid = first_tweet['id']
@@ -36,16 +54,26 @@ def main():
                         , params={ 'q': None  
                                 , 'geocode':'55.953251,-3.188267,2mi'
                                 , 'count':'100'
-                                , 'until':'2018-02-15'
+                                , 'until':'2018-02-18'
                                 , 'max_id':str(maxid)})
                 checker = False
-                i=0
+                
                 for twt in res.get_iterator():
                     checker = True
-                    twt_time = twt['created_at']
-                    twt_l = map(lambda x:x.strip(), (re.split(r'\+\d{4}', twt_time)))
-                    twt_time = datetime.strptime(' '.join(twt_l), '%c')
-                    csv_pen.writerow([twt['text'], twt_time.day, twt_time.hour, twt_time.minute])
+                    day, hour, minute = get_time(twt['created_at'])
+                    # print(twt['coordinates'])
+                    lat = None
+                    lon = None
+                    if twt['coordinates']:
+                        lat, lon = get_coor(twt['coordinates'])
+                        print(str(lat) + ' -- ' + str(lon))
+                    
+                    csv_pen.writerow([twt['text']
+                                    , day
+                                    , hour
+                                    , minute
+                                    , lat
+                                    , lon])
                     maxid = twt['id']-1
                 print(maxid)
                 if not checker:
