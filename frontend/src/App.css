@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,600');
+
+.App {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 300;
+}
+
+a {
+  color: white;
+}
+
+a:hover {
+  color: #72F7F4;
+}
+
+.box {
+  z-index: 20;
+  padding: 0em 1.5em 1em 1.5em;
+  margin: 2em;
+  background-color: #2D2D2D;
+  position: fixed;
+  color: white;
+  border: 2px solid #72F7F4;
+}
+
+.App-about {
+  right: 0;
+  top: 0;
+  height: 14em;
+  width: 13.5em;
+}
+
+.App-title {
+  font-size: 2em;
+  font-weight: 600;
+}
+
+.map {
+  height: 100vh;
+  transform: scale(1.2)
+}
+
+.map-vector {
+  stroke-width: 0.5;
+  stroke: #33FFE1;
+  fill: none;
+}
+
+.App-tweets {
+
+}
+
+.App-legend {
+  text-align:justify;
+  background-color: white;
+  color: #2D2D2D;
+  bottom: 4em;
+  right: 2em;
+}
+
+.dataPoint {
+  position: relative;
+
+  animation: 1s appear;
+    transform-origin: center center;
+    animation-fill-mode:forwards;
+    -webkit-animation-fill-mode:forwards; /*Chrome 16+, Safari 4+*/
+    -moz-animation-fill-mode:forwards; /*FF 5+*/
+    -ms-animation-fill-mode:forwards; /*IE 10+*/
+}
+
+@keyframes appear {
+  0% {
+    transform: scale(0);
+  }
+
+  90% {
+    transform: scale(2);
+  }
+
+  100% {
+    transform: scale(1.5);
+  }
+}
