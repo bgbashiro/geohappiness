@@ -36,9 +36,14 @@ const sampleData = {
       "score": 0.3
     }
     ,{
-      "x"    : 10,
-      "y"    : -15,
+      "x"    : 20,
+      "y"    : 25,
       "score": 0.8
+    },
+    {
+      "x"    : 15,
+      "y"    : 25,
+      "score": 0.6
     },
     {
       "x"    : -10,
@@ -85,21 +90,19 @@ class App extends Component {
   getEmoji(score){
     switch(true) {
       case (score > 0.8):
-        return <span role="img" aria-label="very happy">😄</span>;
+        return <span className="emoji" role="img" aria-label="very happy">😄</span>;
       case (score <= 0.8 && score > 0.6):
-        return <span role="img" aria-label="happy">😊</span>;
+        return <span className="emoji" role="img" aria-label="happy">😊</span>;
       case (score <= 0.6 && score > 0.4):
-        return <span role="img" aria-label="mild">😑</span>;
+        return <span className="emoji" role="img" aria-label="mild">😑</span>;
       case (score <= 0.4 && score > 0.2):
-        return <span role="img" aria-label="sad">😞</span>;
+        return <span className="emoji" role="img" aria-label="sad">😞</span>;
       default:
-        return <span role="img" aria-label="very sad">😢</span>;
+        return <span className="emoji" role="img" aria-label="very sad">😢</span>;
     }
   }
 
   render() {
-    console.log(this.state.data?true:false)
-
     return (
       <div className="App">
         <div className="box App-about">
@@ -119,12 +122,13 @@ class App extends Component {
             <span role="img" aria-label="very sad">😢</span> - Very Sad
           </p>
         </div>
+
         <div className="body">
           {this.state.data?
             this.state.data.data.map((dataPoint) => {
               return (<div key={dataPoint.x * dataPoint.y} className="dataPoint" style={{
-                  "left":dataPoint.x + "vw",
-                  "top":(50 + dataPoint.y) + "vh"
+                  "left":(50+dataPoint.x) + "vw",
+                  "top": (50+dataPoint.y) + "vh"
                 }}>
                   {this.getEmoji(dataPoint.score)}
                 </div>)

@@ -36,13 +36,19 @@ a:hover {
   font-weight: 600;
 }
 
+.body {
+  overflow: hidden;
+
+}
+
 .map {
+  pointer-events: none;
   height: 100vh;
   transform: scale(1.2)
 }
 
 .map-vector {
-  stroke-width: 0.5;
+  stroke-width: 0.25;
   stroke: #33FFE1;
   fill: none;
 }
@@ -60,7 +66,10 @@ a:hover {
 }
 
 .dataPoint {
+  transform: scale(1.5);
   position: relative;
+  width: 1em;
+  height: 1em;
 
   animation: 1s appear;
     transform-origin: center center;
@@ -81,5 +90,24 @@ a:hover {
 
   100% {
     transform: scale(1.5);
+  }
+}
+
+.dataPoint:active {
+  animation: 1s grow;
+  animation-play-state: running;
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(1);
+  }
+
+  90% {
+    transform: scale(2);
+  }
+
+  100% {
+    transform: scale(1);
   }
 }
