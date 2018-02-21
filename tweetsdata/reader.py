@@ -2,7 +2,7 @@ import os, sys
 import json, csv, re
 from datetime import datetime
 from TwitterAPI import TwitterAPI
-from TwitterAPI.TwitterError import *
+from TwitterAPI.TwitterError import TwitterRequestError
 
 def init_api():
     fp = open('credentials.json')
@@ -52,9 +52,9 @@ def main():
             try:
                 res = api.request('search/tweets'
                         , params={ 'q': None  
-                                , 'geocode':'55.953251,-3.188267,2mi'
+                                , 'geocode':'55.953251,-3.188267,5mi'
                                 , 'count':'100'
-                                , 'until':'2018-02-18'
+                                , 'until':'2018-02-21'
                                 , 'max_id':str(maxid)})
                 checker = False
                 
@@ -89,7 +89,6 @@ def main():
 
     print('Data scraping finished')
 
+if __name__ == '__main__':
+    main()
 
-    
-
-main()
