@@ -1,64 +1,29 @@
 import React, { Component } from 'react';
 import Map from './Map.js';
 import './App.css';
+import { getTweets } from './api';
 
 const sampleData = {
   "data": [
     {
-      "x"    : -10,
-      "y"    : 20,
+      "x"    : 55.9533,
+      "y"    : -3.1883 ,
       "score": 0.3
     }
     ,{
-      "x"    : 3,
-      "y"    : 5,
+      "x"    : 55.9633,
+      "y"    : -3.1783 ,
       "score": 0.8
     },
     {
-      "x"    : -10,
-      "y"    : 24,
+      "x"    : 55.9433,
+      "y"    : -3.1983 ,
       "score": 0.5
     },
     {
-      "x"    : 1,
-      "y"    : 2,
+      "x"    : -74.189623,
+      "y"    : 40.721813,
       "score": 0.1
-    },
-    {
-      "x"    : -8,
-      "y"    : -4,
-      "score": 0.92
-    },
-
-    {
-      "x"    : -2,
-      "y"    : 17,
-      "score": 0.3
-    }
-    ,{
-      "x"    : 20,
-      "y"    : 25,
-      "score": 0.8
-    },
-    {
-      "x"    : 15,
-      "y"    : 25,
-      "score": 0.6
-    },
-    {
-      "x"    : -10,
-      "y"    : -3,
-      "score": 0.5
-    },
-    {
-      "x"    : -3,
-      "y"    : 15,
-      "score": 0.1
-    },
-    {
-      "x"    : -9,
-      "y"    : -3,
-      "score": 0.92
     }
   ]
 }
@@ -67,9 +32,9 @@ class App extends Component {
   constructor(props){
     super(props);
 
-    this.state = {}
+    this.state = {};
 
-    this.getData     = this.getData.bind(this);
+    this.getData = this.getData.bind(this);
   }
 
   componentWillMount(){
@@ -80,6 +45,17 @@ class App extends Component {
   getData(){
     let newData = sampleData;
 
+    getTweets((err, data) => {
+      console.log(data);
+
+      if(data){
+        newData = data;
+      }else {
+        newData = sampleData
+      }
+    })
+
+    console.log(newData);
     if(newData !== this.state.data){
       this.setState({
         data: newData
@@ -87,24 +63,16 @@ class App extends Component {
     }
   }
 
-  getEmoji(score){
-    switch(true) {
-      case (score > 0.8):
-        return <span className="emoji" role="img" aria-label="very happy">😄</span>;
-      case (score <= 0.8 && score > 0.6):
-        return <span className="emoji" role="img" aria-label="happy">😊</span>;
-      case (score <= 0.6 && score > 0.4):
-        return <span className="emoji" role="img" aria-label="mild">😑</span>;
-      case (score <= 0.4 && score > 0.2):
-        return <span className="emoji" role="img" aria-label="sad">😞</span>;
-      default:
-        return <span className="emoji" role="img" aria-label="very sad">😢</span>;
-    }
-  }
-
   render() {
     return (
       <div className="App">
+        <Map
+          data={this.state.data}
+          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVUv_3RF42tNv2FAsg2tukrSMf2Ns5J7Q&v=3.exp&libraries=geometry,drawing,places"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: `100vh` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
+        />
         <div className="box App-about">
           <h1 className="App-title">GeoHappiness</h1>
           <p>A map of the happiness of Edinburgh using machine learning to analyse tweet sentiments</p>
@@ -121,20 +89,6 @@ class App extends Component {
             <span role="img" aria-label="sad">😞</span> - Sad<br/>
             <span role="img" aria-label="very sad">😢</span> - Very Sad
           </p>
-        </div>
-
-        <div className="body">
-          {this.state.data?
-            this.state.data.data.map((dataPoint) => {
-              return (<div key={dataPoint.x * dataPoint.y} className="dataPoint" style={{
-                  "left":(50+dataPoint.x) + "vw",
-                  "top": (50+dataPoint.y) + "vh"
-                }}>
-                  {this.getEmoji(dataPoint.score)}
-                </div>)
-            })
-            :null},
-          <Map />
         </div>
       </div>
     );

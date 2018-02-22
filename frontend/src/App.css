@@ -4,6 +4,8 @@
   text-align: center;
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
+  overflow: hidden;
+
 }
 
 a {
@@ -36,11 +38,6 @@ a:hover {
   font-weight: 600;
 }
 
-.body {
-  overflow: hidden;
-
-}
-
 .map {
   pointer-events: none;
   height: 100vh;
@@ -59,55 +56,13 @@ a:hover {
 
 .App-legend {
   text-align:justify;
-  background-color: white;
-  color: #2D2D2D;
+  background-color: #2D2D2D;
+  padding-bottom: 0.2em;
   bottom: 4em;
   right: 2em;
 }
 
 .dataPoint {
-  transform: scale(1.5);
+  transform: scale(2);
   position: relative;
-  width: 1em;
-  height: 1em;
-
-  animation: 1s appear;
-    transform-origin: center center;
-    animation-fill-mode:forwards;
-    -webkit-animation-fill-mode:forwards; /*Chrome 16+, Safari 4+*/
-    -moz-animation-fill-mode:forwards; /*FF 5+*/
-    -ms-animation-fill-mode:forwards; /*IE 10+*/
-}
-
-@keyframes appear {
-  0% {
-    transform: scale(0);
-  }
-
-  90% {
-    transform: scale(2);
-  }
-
-  100% {
-    transform: scale(1.5);
-  }
-}
-
-.dataPoint:active {
-  animation: 1s grow;
-  animation-play-state: running;
-}
-
-@keyframes grow {
-  0% {
-    transform: scale(1);
-  }
-
-  90% {
-    transform: scale(2);
-  }
-
-  100% {
-    transform: scale(1);
-  }
 }

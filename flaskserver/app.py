@@ -20,8 +20,8 @@ thread = None
 thread_lock = Lock()
 
 with app.app_context():
-    """This is very premature server and very fragile, emits 
-    json object like this 
+    """This is very premature server and very fragile, emits
+    json object like this
     {
         'lat':some number
         'long':some number
@@ -58,7 +58,7 @@ with app.app_context():
                         score = dummy_classifier(twt["text"])
                         lat = twt["coordinates"]["coordinates"][0]
                         long = twt["coordinates"]["coordinates"][1]
-                        socketio.emit('tweet',{ 
+                        socketio.emit('tweet',{
                                     'lat':lat
                                     ,'long':long
                                     ,'score':score
