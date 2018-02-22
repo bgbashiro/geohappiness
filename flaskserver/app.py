@@ -6,6 +6,12 @@ from TwitterAPI import TwitterAPI
 from TwitterAPI.TwitterError import *
 from reader import init_api
 from random import random
+import csv
+# import ML modules
+import sys
+sys.path.append('MLmodules')
+from wordcount import *
+from predicter import Predicter
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
@@ -18,6 +24,56 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
+
+def init_ml():
+    # Let us fire up our ML, shall we?
+    # make sentence and label list from csv
+    sent_list = []
+    lbl_list = []
+    # values of boundaries has been determined by manual analysis
+    boundaries =[
+        0.18,
+    #     0.1958,
+    #     0.1680,
+        0.17
+    ]
+    def get_lbl(score):
+
+        if x>boundaries[0]:
+            return 2
+    #     elif x<boundaries[3]:
+    #         return 0
+        elif x<boundaries[1]:
+            return 0
+    #     elif x<boundaries[2]:
+    #         return 3
+        else:
+            return 1
+        
+    with open('tweets.csv') as fp:
+        csv_r = csv.reader(fp)
+        for line in csv_r:
+            # some lines have sentence instead of score value
+            # ignore them
+            try:
+                x = float(line[2])
+                lbl = get_lbl(x)
+                lbl_list.append(lbl)
+            except:
+                continue
+            sent_list.append(line[1])
+    # make dictionary list
+    with open('dictionary.csv') as fp:
+        csv_r = csv.reader(fp)
+        dictionary = []
+        for x in list(csv_r):
+            dictionary.append(x[0])
+    
+    pred = Predicter()
+    pred.init_labeler(dictionary)
+    pred.train(sent_list, lbl_list)
+
+    return pred.predict_sentence
 
 with app.app_context():
     """This is very premature server and very fragile, emits 
@@ -42,11 +98,15 @@ with app.app_context():
     where data is JSON object
     """
 
+    
+
+
     # please be careful with this one, can easily fail
     def background_thread():
         """Listens for tweets when it gets tweet with location emits through socket with name 'tweet'"""
-        def dummy_classifier(tweet):
-            return random()
+        
+        classify_tweet = init_ml()
+
         while True:
             try:
                 res = api.request('statuses/filter', {
@@ -54,14 +114,16 @@ with app.app_context():
                 })
                 for twt in res.get_iterator():
                     if(twt["coordinates"]):
-                        print(twt["coordinates"])
-                        score = dummy_classifier(twt["text"])
+                        label = classify_tweet(twt['text'])
+                        print(twt['text'] + ' -> '+str(label))                        
                         lat = twt["coordinates"]["coordinates"][0]
                         long = twt["coordinates"]["coordinates"][1]
+                        txt = twt['text']
                         socketio.emit('tweet',{ 
                                     'lat':lat
                                     ,'long':long
-                                    ,'score':score
+                                    ,'score':label
+                                    ,'tweetid':txt
                                     }, namespace='/test')
             except TwitterRequestError as e:
                 if e.status_code < 500:
