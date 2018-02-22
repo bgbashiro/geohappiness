@@ -47,7 +47,12 @@ class Stats(object):
         words = mk_words(sentence)
         for word in words:
             self.add_word(word)
+            
+    def process_pd_series(self,series):
+        series.apply(self.add_sentence)
+        return self.dictionary
     
+    # DO NOT USE THIS METHOD
     def process_file(self, filename, target):
         """read the <filename> text file, dump stats to <target>
         """

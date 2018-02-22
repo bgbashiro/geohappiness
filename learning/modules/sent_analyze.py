@@ -1,7 +1,7 @@
 import numpy as np
 import csv, sys
 from sklearn.naive_bayes import BernoulliNB
-from sentence_sent import SentenceLabeler
+from labeller import SentenceLabeler
 
 def line_to_array(line):
     return list(map(float, line.split(' ')))
