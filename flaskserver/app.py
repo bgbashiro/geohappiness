@@ -118,8 +118,12 @@ with app.app_context():
                         print(twt['text'] + ' -> '+str(label))
                         lat = twt["coordinates"]["coordinates"][0]
                         long = twt["coordinates"]["coordinates"][1]
+<<<<<<< HEAD
+                        socketio.emit('tweet',{
+=======
                         txt = twt['text']
                         socketio.emit('tweet',{
+>>>>>>> 695287e931eaeb4545f9ec42a8373d0341494905
                                     'lat':lat
                                     ,'long':long
                                     ,'score':label

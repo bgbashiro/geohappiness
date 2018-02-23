@@ -63,12 +63,13 @@ a:hover {
 .tweet {
   text-align: justify;
   margin: 0.8em auto;
-  border: 1px solid #FFFFFF;
-  padding: 0em 0.25em;
+  /* border: 1px solid #FFFFFF; */
+  padding: 0.1em 0.25em;
 }
 
 .tweet:hover {
-  border: 1px solid #72F7F4;
+  background-color: white;
+  color: #2D2D2D;
 }
 
 .App-legend {

@@ -10,6 +10,5 @@ A map that shows the happiness of a place through emoji's
 - [x] ~Make tweets populate the screen with various emojis~
 - [x] ~Finish Description Component~
 - [x] ~Finish Legend Component~
-- [ ] Finish Tweets Component
-- [ ] Write out footer
+- [x] Finish Tweets Component
 - [ ] Create a background action

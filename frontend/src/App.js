@@ -51,13 +51,13 @@ class App extends Component {
     let newData = this.state.points;
 
     getTweets((err, data) => {
+      console.log("New data added! Length: ", newData.length);
       if(!err){
         newData.push(data);
         if(newData.length > 30){
           newData.shift();
         }
 
-        console.log("New data added! Length: ", newData.length);
         this.setState({
           points: newData
         })
@@ -78,18 +78,19 @@ class App extends Component {
         />
         <div className="box App-about">
           <h1 className="App-title">GeoHappiness</h1>
-          <p>A map of the happiness of Edinburgh using machine learning to analyse tweet sentiments</p>
+          <p>A map of the happiness of a given city using machine learning to analyse tweet sentiments</p>
           <a href="https://github.com/bashir4909/geohappiness">about the project</a>
         </div>
         <div className="box App-tweets">
-          {this.state.points
-            .map((dataPoint) => {
+          {JSON.stringify(this.state.points) !== "[]"?
+            this.state.points.map((dataPoint) => {
               if(dataPoint.tweetid){
                 return <TweetBox key={dataPoint.score} text={dataPoint.tweetid}/>
               } else {
                 return null;
               }
-          })}
+            }):<div style={{marginTop: "50%", color: "gray"}}>"Twitter Feed"</div>
+          }
         </div>
         <div className="box App-legend">
           <p>
