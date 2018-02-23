@@ -139,7 +139,6 @@ class TwitterAPI(object):
             else:
                 data = None
             try: 
-                print(url)
                 r = session.request(
                     method,
                     url,

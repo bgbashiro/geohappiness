@@ -1,7 +1,5 @@
 import openSocket from 'socket.io-client';
-
-const  socket = openSocket('http://127.0.0.1:5000/');
-
+const socket = openSocket('http://127.0.0.1:5000/test');
 
 function getTweets(callBack) {
   socket.on('tweet', (data) => {
