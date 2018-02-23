@@ -1,64 +1,34 @@
 import React, { Component } from 'react';
 import Map from './Map.js';
 import './App.css';
+import { getTweets } from './api';
+import TweetBox from './TweetBox';
 
 const sampleData = {
-  "data": [
+  "points": [
     {
-      "x"    : -10,
-      "y"    : 20,
-      "score": 0.3
+      "lat"    : 55.9533,
+      "long"   : -3.1883 ,
+      "score"  : 0.3,
+      "tweetid": "Young people have helped lead all our great movements. How inspiring to see it again in so many smart, fearless students standing up for their right to be safe; marching and organizing to remake the world as it should be. We've been waiting for you. And we've got your backs."
     }
     ,{
-      "x"    : 3,
-      "y"    : 5,
-      "score": 0.8
+      "lat"    : 55.9633,
+      "long"   : -3.1783 ,
+      "score"  : 0.8,
+      "tweetid": "ShapeShift (2% of Bitcoin Network) is Now Batching Transactions https://shar.es/1LXkDp  #bitcoin @shapeshift_io"
     },
     {
-      "x"    : -10,
-      "y"    : 24,
-      "score": 0.5
+      "lat"    : 55.9433,
+      "long"   : -3.1983 ,
+      "score"  : 0.5,
+      "tweetid": "Kylie Jenner wiped out $1.3 billion of Snap's market value in one tweet https://bloom.bg/2EKNmCf"
     },
     {
-      "x"    : 1,
-      "y"    : 2,
-      "score": 0.1
-    },
-    {
-      "x"    : -8,
-      "y"    : -4,
-      "score": 0.92
-    },
-
-    {
-      "x"    : -2,
-      "y"    : 17,
-      "score": 0.3
-    }
-    ,{
-      "x"    : 20,
-      "y"    : 25,
-      "score": 0.8
-    },
-    {
-      "x"    : 15,
-      "y"    : 25,
-      "score": 0.6
-    },
-    {
-      "x"    : -10,
-      "y"    : -3,
-      "score": 0.5
-    },
-    {
-      "x"    : -3,
-      "y"    : 15,
-      "score": 0.1
-    },
-    {
-      "x"    : -9,
-      "y"    : -3,
-      "score": 0.92
+      "lat"    : -74.189623,
+      "long"   : 40.721813,
+      "score"  : 0.1,
+      "tweetid": "Billy Graham was a humble servant who prayed for so many - and who, with wisdom and grace, gave hope and guidance to generations of Americans."
     }
   ]
 }
@@ -67,9 +37,9 @@ class App extends Component {
   constructor(props){
     super(props);
 
-    this.state = {}
-
-    this.getData     = this.getData.bind(this);
+    this.state = {
+      points: sampleData.points
+    }
   }
 
   componentWillMount(){
@@ -78,41 +48,49 @@ class App extends Component {
 
   //Make a fetch request from the API
   getData(){
-    let newData = sampleData;
+    let newData = this.state.points;
 
-    if(newData !== this.state.data){
-      this.setState({
-        data: newData
-      })
-    }
+    getTweets((err, data) => {
+      if(!err){
+        newData.push(data);
+        if(newData.length > 30){
+          newData.shift();
+        }
+
+        console.log("New data added! Length: ", newData.length);
+        this.setState({
+          points: newData
+        })
+      }
+    })
   }
 
-  getEmoji(score){
-    switch(true) {
-      case (score > 0.8):
-        return <span className="emoji" role="img" aria-label="very happy">😄</span>;
-      case (score <= 0.8 && score > 0.6):
-        return <span className="emoji" role="img" aria-label="happy">😊</span>;
-      case (score <= 0.6 && score > 0.4):
-        return <span className="emoji" role="img" aria-label="mild">😑</span>;
-      case (score <= 0.4 && score > 0.2):
-        return <span className="emoji" role="img" aria-label="sad">😞</span>;
-      default:
-        return <span className="emoji" role="img" aria-label="very sad">😢</span>;
-    }
-  }
 
   render() {
     return (
       <div className="App">
+        <Map
+          points={this.state.points}
+          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVUv_3RF42tNv2FAsg2tukrSMf2Ns5J7Q&v=3.exp&libraries=geometry,drawing,places"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: `100vh` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
+        />
         <div className="box App-about">
           <h1 className="App-title">GeoHappiness</h1>
           <p>A map of the happiness of Edinburgh using machine learning to analyse tweet sentiments</p>
-          <a href="">about the project</a>
+          <a href="https://github.com/bashir4909/geohappiness">about the project</a>
         </div>
-        {/* <div className="box App-tweets">
-          <TweetBox />
-        </div> */}
+        <div className="box App-tweets">
+          {this.state.points
+            .map((dataPoint) => {
+              if(dataPoint.tweetid){
+                return <TweetBox key={dataPoint.score} text={dataPoint.tweetid}/>
+              } else {
+                return null;
+              }
+          })}
+        </div>
         <div className="box App-legend">
           <p>
             <span role="img" aria-label="very happy">😄</span> - Very Happy<br/>
@@ -121,20 +99,6 @@ class App extends Component {
             <span role="img" aria-label="sad">😞</span> - Sad<br/>
             <span role="img" aria-label="very sad">😢</span> - Very Sad
           </p>
-        </div>
-
-        <div className="body">
-          {this.state.data?
-            this.state.data.data.map((dataPoint) => {
-              return (<div key={dataPoint.x * dataPoint.y} className="dataPoint" style={{
-                  "left":(50+dataPoint.x) + "vw",
-                  "top": (50+dataPoint.y) + "vh"
-                }}>
-                  {this.getEmoji(dataPoint.score)}
-                </div>)
-            })
-            :null},
-          <Map />
         </div>
       </div>
     );

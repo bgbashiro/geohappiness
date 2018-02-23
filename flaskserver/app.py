@@ -49,7 +49,7 @@ def init_ml():
     #         return 3
         else:
             return 1
-        
+
     with open('tweets.csv') as fp:
         csv_r = csv.reader(fp)
         for line in csv_r:
@@ -68,7 +68,7 @@ def init_ml():
         dictionary = []
         for x in list(csv_r):
             dictionary.append(x[0])
-    
+
     pred = Predicter()
     pred.init_labeler(dictionary)
     pred.train(sent_list, lbl_list)
@@ -76,8 +76,8 @@ def init_ml():
     return pred.predict_sentence
 
 with app.app_context():
-    """This is very premature server and very fragile, emits 
-    json object like this 
+    """This is very premature server and very fragile, emits
+    json object like this
     {
         'lat':some number
         'long':some number
@@ -98,13 +98,13 @@ with app.app_context():
     where data is JSON object
     """
 
-    
+
 
 
     # please be careful with this one, can easily fail
     def background_thread():
         """Listens for tweets when it gets tweet with location emits through socket with name 'tweet'"""
-        
+
         classify_tweet = init_ml()
 
         while True:
@@ -115,11 +115,11 @@ with app.app_context():
                 for twt in res.get_iterator():
                     if(twt["coordinates"]):
                         label = classify_tweet(twt['text'])
-                        print(twt['text'] + ' -> '+str(label))                        
+                        print(twt['text'] + ' -> '+str(label))
                         lat = twt["coordinates"]["coordinates"][0]
                         long = twt["coordinates"]["coordinates"][1]
                         txt = twt['text']
-                        socketio.emit('tweet',{ 
+                        socketio.emit('tweet',{
                                     'lat':lat
                                     ,'long':long
                                     ,'score':label
@@ -136,7 +136,7 @@ with app.app_context():
                 # temporary interruption, re-try request
                 pass
 
-    
+
     @app.route('/')
     def index():
         return render_template('index.html', async_mode=socketio.async_mode)
