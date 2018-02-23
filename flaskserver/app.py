@@ -25,56 +25,6 @@ socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
 
-def init_ml():
-    # Let us fire up our ML, shall we?
-    # make sentence and label list from csv
-    sent_list = []
-    lbl_list = []
-    # values of boundaries has been determined by manual analysis
-    boundaries =[
-        0.18,
-    #     0.1958,
-    #     0.1680,
-        0.17
-    ]
-    def get_lbl(score):
-
-        if x>boundaries[0]:
-            return 2
-    #     elif x<boundaries[3]:
-    #         return 0
-        elif x<boundaries[1]:
-            return 0
-    #     elif x<boundaries[2]:
-    #         return 3
-        else:
-            return 1
-
-    with open('tweets.csv') as fp:
-        csv_r = csv.reader(fp)
-        for line in csv_r:
-            # some lines have sentence instead of score value
-            # ignore them
-            try:
-                x = float(line[2])
-                lbl = get_lbl(x)
-                lbl_list.append(lbl)
-            except:
-                continue
-            sent_list.append(line[1])
-    # make dictionary list
-    with open('dictionary.csv') as fp:
-        csv_r = csv.reader(fp)
-        dictionary = []
-        for x in list(csv_r):
-            dictionary.append(x[0])
-
-    pred = Predicter()
-    pred.init_labeler(dictionary)
-    pred.train(sent_list, lbl_list)
-
-    return pred.predict_sentence
-
 with app.app_context():
     """This is very premature server and very fragile, emits
     json object like this
@@ -97,14 +47,60 @@ with app.app_context():
     });
     where data is JSON object
     """
-
-
-
-
     # please be careful with this one, can easily fail
     def background_thread():
         """Listens for tweets when it gets tweet with location emits through socket with name 'tweet'"""
 
+             def init_ml():
+        # Let us fire up our ML, shall we?
+        # make sentence and label list from csv
+        sent_list = []
+        lbl_list = []
+        # values of boundaries has been determined by manual analysis
+        boundaries =[
+            0.18,
+        #     0.1958,
+        #     0.1680,
+            0.17
+        ]
+        def get_lbl(score):
+
+            if x>boundaries[0]:
+                return 2
+        #     elif x<boundaries[3]:
+        #         return 0
+            elif x<boundaries[1]:
+                return 0
+        #     elif x<boundaries[2]:
+        #         return 3
+            else:
+                return 1
+            
+        with open('tweets.csv') as fp:
+            csv_r = csv.reader(fp)
+            for line in csv_r:
+                # some lines have sentence instead of score value
+                # ignore them
+                try:
+                    x = float(line[2])
+                    lbl = get_lbl(x)
+                    lbl_list.append(lbl)
+                except:
+                    continue
+                sent_list.append(line[1])
+        # make dictionary list
+        with open('dictionary.csv') as fp:
+            csv_r = csv.reader(fp)
+            dictionary = []
+            for x in list(csv_r):
+                dictionary.append(x[0])
+    
+        pred = Predicter()
+        pred.init_labeler(dictionary)
+        pred.train(sent_list, lbl_list)
+
+        return pred.predict_sentence
+        
         classify_tweet = init_ml()
 
         while True:
@@ -118,12 +114,9 @@ with app.app_context():
                         print(twt['text'] + ' -> '+str(label))
                         lat = twt["coordinates"]["coordinates"][0]
                         long = twt["coordinates"]["coordinates"][1]
-<<<<<<< HEAD
                         socketio.emit('tweet',{
-=======
                         txt = twt['text']
                         socketio.emit('tweet',{
->>>>>>> 695287e931eaeb4545f9ec42a8373d0341494905
                                     'lat':lat
                                     ,'long':long
                                     ,'score':label
