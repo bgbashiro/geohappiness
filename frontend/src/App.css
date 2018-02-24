@@ -84,3 +84,28 @@ a:hover {
   transform: scale(2);
   position: relative;
 }
+
+@media only screen and (max-width: 768px){
+  .App {
+    background-color: #2D2D2D;
+  }
+
+  .box {
+    position: static;
+    margin: 0em auto;
+    width: 93vw;
+  }
+
+  .App-about {
+
+  }
+
+  .App-tweets {
+
+  }
+
+  .App-legend {
+
+  }
+
+}
